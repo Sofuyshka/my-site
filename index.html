@@ -6,36 +6,26 @@
   <title>Софушка</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Arial Black', Arial, sans-serif;
       height: 100vh;
       overflow: hidden;
-      background: linear-gradient(135deg,
-        #f97316 0%,
-        #ec4899 30%,
-        #a855f7 60%,
-        #3b82f6 100%);
+      background: linear-gradient(135deg, #f97316 0%, #ec4899 30%, #a855f7 60%, #3b82f6 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
     }
-
-    /* мягкое свечение поверх градиента */
     body::before {
       content: '';
       position: absolute;
-      top: 40%;
-      left: 50%;
-      width: 600px;
-      height: 400px;
+      top: 40%; left: 50%;
+      width: 600px; height: 400px;
       transform: translate(-50%, -50%);
       background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
       filter: blur(60px);
       pointer-events: none;
     }
-
     h1 {
       font-size: 8vw;
       color: white;
@@ -44,16 +34,13 @@
       z-index: 1;
       text-shadow: 4px 4px 0 rgba(0,0,0,0.15);
     }
-
     img {
       position: absolute;
-      right: 3vw;
-      bottom: 0;
+      right: 3vw; bottom: 0;
       height: 90vh;
-      image-rendering: pixelated; /* сохраняет чёткость пикселей */
+      image-rendering: pixelated;
       z-index: 2;
     }
-
     @media (max-width: 700px) {
       h1 { font-size: 16vw; }
       img { height: 60vh; right: 0; }
