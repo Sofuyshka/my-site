@@ -22,7 +22,6 @@
       position: relative;
     }
 
-    /* мягкое свечение поверх градиента */
     body::before {
       content: '';
       position: absolute;
@@ -48,6 +47,20 @@
       padding-left: 3vw;
     }
 
+    /* Курсор, который мигает во время печати */
+    h1 .cursor {
+      display: inline-block;
+      width: 0.08em;
+      background: white;
+      margin-left: 0.05em;
+      animation: blink 0.8s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Девочка — изначально невидима */
     img {
       position: absolute;
       right: 20vw;
@@ -55,6 +68,15 @@
       height: 48vh;
       image-rendering: pixelated;
       z-index: 2;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    /* Когда класс появится — девочка выезжает */
+    img.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Мобильная версия */
@@ -74,7 +96,11 @@
         right: 50%;
         bottom: 35vh;
         height: 40vh;
-        transform: translateX(50%);
+        transform: translateX(50%) translateY(30px);
+      }
+
+      img.show {
+        transform: translateX(50%) translateY(0);
       }
 
       body::before {
@@ -85,7 +111,30 @@
   </style>
 </head>
 <body>
-  <h1>ПРИВЕТ!!!</h1>
-  <img src="girl.png" alt="Пиксельная девочка">
+  <h1><span id="text"></span><span class="cursor">&nbsp;</span></h1>
+  <img id="girl" src="girl.png" alt="Пиксельная девочка">
+
+  <script>
+    const fullText = "ПРИВЕТ!!!";
+    const textEl = document.getElementById("text");
+    const girlEl = document.getElementById("girl");
+    let i = 0;
+
+    function type() {
+      if (i < fullText.length) {
+        textEl.textContent += fullText.charAt(i);
+        i++;
+        setTimeout(type, 180); // скорость печати (мс). Больше = медленнее
+      } else {
+        // Текст напечатан — показываем девочку
+        setTimeout(() => {
+          girlEl.classList.add("show");
+        }, 400);
+      }
+    }
+
+    // Небольшая пауза после загрузки, потом начинаем печатать
+    setTimeout(type, 500);
+  </script>
 </body>
 </html>
