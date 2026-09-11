@@ -76,10 +76,10 @@
       transform: translateY(0);
     }
 
-    /* Контейнер с кнопками внизу */
+    /* Контейнер с кнопками — теперь выше */
     .buttons {
       position: absolute;
-      bottom: 5vh;
+      bottom: 14vh;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
       display: flex;
@@ -176,8 +176,8 @@
       right: 16px;
       background: none;
       border: none;
-      font-size: 1.6rem;
-      cursor: pointer;color: #2c3e50;
+      font-size: 1.6rem;cursor: pointer;
+      color: #2c3e50;
       line-height: 1;
       transition: transform 0.2s;
     }
@@ -213,11 +213,6 @@
       background: rgba(255, 255, 255, 0.95);
       border-color: rgba(44, 62, 80, 0.4);
       transform: translateX(4px);
-    }
-
-    .quiz-answer.selected {
-      background: rgba(168, 85, 247, 0.25);
-      border-color: #a855f7;
     }
 
     .quiz-progress {
@@ -294,7 +289,7 @@
 
       .buttons {
         gap: 10px;
-        bottom: 4vh;
+        bottom: 12vh;
       }
 
       .about-btn {
@@ -334,6 +329,10 @@
     <button class="about-btn" id="quizBtn">Угадайка</button>
   </div>
 
+  <!-- Аудио -->
+  <audio id="aboutAudio" src="about.mp3" loop></audio>
+  <audio id="quizAudio" src="quiz.mp3" loop></audio>
+
   <!-- Окно "Обо мне" -->
   <div class="modal-overlay" id="aboutOverlay">
     <div class="modal">
@@ -354,17 +353,19 @@
 
   <script>
     const fullText = "ПРИВЕТ!!!";
-    const textEl = document.getElementById("text");
-    const girlEl = document.getElementById("girl");const buttonsEl = document.getElementById("buttons");
+    const textEl = document.getElementById("text");const girlEl = document.getElementById("girl");
+    const buttonsEl = document.getElementById("buttons");
 
     const aboutBtn = document.getElementById("aboutBtn");
     const aboutOverlay = document.getElementById("aboutOverlay");
     const aboutClose = document.getElementById("aboutClose");
+    const aboutAudio = document.getElementById("aboutAudio");
 
     const quizBtn = document.getElementById("quizBtn");
     const quizOverlay = document.getElementById("quizOverlay");
     const quizClose = document.getElementById("quizClose");
     const quizContent = document.getElementById("quizContent");
+    const quizAudio = document.getElementById("quizAudio");
 
     /* ============ АНИМАЦИЯ ПЕЧАТИ ============ */
     let i = 0;
@@ -387,24 +388,44 @@
     }
     setTimeout(type, 500);
 
-    /* ============ ОКНО "ОБО МНЕ" ============ */
-    aboutBtn.addEventListener("click", () => aboutOverlay.classList.add("open"));
-    aboutClose.addEventListener("click", () => aboutOverlay.classList.remove("open"));
-    aboutOverlay.addEventListener("click", (e) => {
-      if (e.target === aboutOverlay) aboutOverlay.classList.remove("open");
+    /* ============ ОКНО "ОБО МНЕ" + МУЗЫКА ============ */
+    aboutBtn.addEventListener("click", () => {
+      aboutOverlay.classList.add("open");
+      aboutAudio.currentTime = 0;
+      aboutAudio.volume = 0.5;
+      aboutAudio.play().catch(() => {});
     });
 
-    /* ============ ОКНО "УГАДАЙКА" ============ */
+    function closeAbout() {
+      aboutOverlay.classList.remove("open");
+      aboutAudio.pause();
+      aboutAudio.currentTime = 0;
+    }
+    aboutClose.addEventListener("click", closeAbout);
+    aboutOverlay.addEventListener("click", (e) => {
+      if (e.target === aboutOverlay) closeAbout();
+    });
+
+    /* ============ ОКНО "УГАДАЙКА" + МУЗЫКА ============ */
     quizBtn.addEventListener("click", () => {
       quizOverlay.classList.add("open");
       showQuizIntro();
-    });
-    quizClose.addEventListener("click", () => quizOverlay.classList.remove("open"));
-    quizOverlay.addEventListener("click", (e) => {
-      if (e.target === quizOverlay) quizOverlay.classList.remove("open");
+      quizAudio.currentTime = 0;
+      quizAudio.volume = 0.5;
+      quizAudio.play().catch(() => {});
     });
 
-    // Вопросы и правильные ответы
+    function closeQuiz() {
+      quizOverlay.classList.remove("open");
+      quizAudio.pause();
+      quizAudio.currentTime = 0;
+    }
+    quizClose.addEventListener("click", closeQuiz);
+    quizOverlay.addEventListener("click", (e) => {
+      if (e.target === quizOverlay) closeQuiz();
+    });
+
+    /* ============ ВОПРОСЫ ============ */
     const questions = [
       {
         q: "В каком месяце я родилась?",
@@ -434,7 +455,7 @@
       {
         q: "Мой любимый аниме персонаж?",
         answers: ["Годжо Сатору", "Эл Лоулайт", "Гриффит", "Харука Касугано"],
-        correct: 0
+        correct: 2
       }
     ];
 
@@ -458,8 +479,7 @@
       const q = questions[currentQuestion];
       const progress = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
 
-      quizContent.innerHTML = `
-        <div class="quiz-progress">${progress}</div>
+      quizContent.innerHTML = `<div class="quiz-progress">${progress}</div>
         <div class="quiz-question">${q.q}</div>
         ${q.answers.map((a, idx) =>
           `<button class="quiz-answer" data-idx="${idx}">${a}</button>`
@@ -477,7 +497,8 @@
           } else {
             showResult();
           }
-        });});
+        });
+      });
     }
 
     function showResult() {
@@ -495,8 +516,8 @@
     /* ============ ЗАКРЫТИЕ ПО ESC ============ */
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        aboutOverlay.classList.remove("open");
-        quizOverlay.classList.remove("open");
+        closeAbout();
+        closeQuiz();
       }
     });
   </script>
