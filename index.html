@@ -1,7 +1,183 @@
-/* Мобильная версия */
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Софушка</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Arial Black', Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg,
+        #f97316 0%,
+        #ec4899 30%,
+        #a855f7 60%,
+        #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      width: 600px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    h1 {
+      font-size: 6vw;
+      color: white;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      z-index: 1;
+      text-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+      white-space: nowrap;
+      padding-left: 3vw;
+    }
+
+    h1 .cursor {
+      display: inline-block;
+      width: 0.08em;
+      background: white;
+      margin-left: 0.05em;
+      animation: blink 0.8s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    img {
+      position: absolute;
+      right: 20vw;
+      bottom: 35vh;
+      height: 48vh;
+      image-rendering: pixelated;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    img.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .about-btn {
+      position: absolute;
+      bottom: 5vh;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      padding: 14px 36px;
+      font-family: 'Arial Black', Arial, sans-serif;
+      font-size: 1.2rem;
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .about-btn.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .about-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      position: relative;
+      max-width: 500px;
+      width: 90%;
+      padding: 40px 32px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      color: #2c3e50;
+      transform: scale(0.9);
+      transition: transform 0.4s ease;
+      backdrop-filter: blur(20px);
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1);
+    }
+
+    .modal h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .modal p {
+      font-family: Arial, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .modal p:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: #2c3e50;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+      transform: scale(1.2);
+    }
+
     @media (max-width: 700px) {
-      body {
-        flex-direction: column;
+      body {flex-direction: column;
       }
 
       h1 {
@@ -73,39 +249,32 @@
         i++;
         setTimeout(type, 180);
       } else {
-        // Прячем курсор
         document.querySelector(".cursor").style.display = "none";
 
-        // Показываем девочку
         setTimeout(() => {
           girlEl.classList.add("show");
         }, 400);
 
-        // Через 1.4 секунды после девочки — показываем кнопку
         setTimeout(() => {
           aboutBtn.classList.add("show");
         }, 1800);
       }
     }
 
-    // Открыть модальное окно
     aboutBtn.addEventListener("click", () => {
       modalOverlay.classList.add("open");
     });
 
-    // Закрыть по крестику
     modalClose.addEventListener("click", () => {
       modalOverlay.classList.remove("open");
     });
 
-    // Закрыть по клику на фон
     modalOverlay.addEventListener("click", (e) => {
       if (e.target === modalOverlay) {
         modalOverlay.classList.remove("open");
       }
     });
 
-    // Закрыть по Esc
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         modalOverlay.classList.remove("open");
