@@ -1,84 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Софушка</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Arial Black', Arial, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(135deg,
-        #f97316 0%,
-        #ec4899 30%,
-        #a855f7 60%,
-        #3b82f6 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      width: 600px;
-      height: 400px;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
-      filter: blur(60px);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    h1 {
-      font-size: 6vw;
-      color: white;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      z-index: 1;
-      text-shadow: 4px 4px 0 rgba(0,0,0,0.15);
-      white-space: nowrap;
-      padding-left: 3vw;
-    }
-
-    /* Курсор, который мигает во время печати */
-    h1 .cursor {
-      display: inline-block;
-      width: 0.08em;
-      background: white;
-      margin-left: 0.05em;
-      animation: blink 0.8s steps(1) infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    /* Девочка — изначально невидима */
-    img {
-      position: absolute;
-      right: 20vw;
-      bottom: 35vh;
-      height: 48vh;
-      image-rendering: pixelated;
-      z-index: 2;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease, transform 1s ease;
-    }
-
-    img.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Мобильная версия */
+/* Мобильная версия */
     @media (max-width: 700px) {
       body {
         flex-direction: column;
@@ -106,6 +26,20 @@
         width: 300px;
         height: 250px;
       }
+
+      .about-btn {
+        font-size: 1rem;
+        padding: 12px 28px;
+        bottom: 4vh;
+      }
+
+      .modal h2 {
+        font-size: 1.3rem;
+      }
+
+      .modal p {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -113,10 +47,24 @@
   <h1><span id="text"></span><span class="cursor">&nbsp;</span></h1>
   <img id="girl" src="girl.png" alt="Пиксельная девочка">
 
+  <button class="about-btn" id="aboutBtn">Обо мне</button>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">×</button>
+      <h2>Обо мне</h2>
+      <p>Я очень люблю котиков 🐱</p>
+      <p>Моя любимая группа — Deftones 🎵</p>
+    </div>
+  </div>
+
   <script>
     const fullText = "ПРИВЕТ!!!";
     const textEl = document.getElementById("text");
     const girlEl = document.getElementById("girl");
+    const aboutBtn = document.getElementById("aboutBtn");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalClose = document.getElementById("modalClose");
     let i = 0;
 
     function type() {
@@ -125,15 +73,44 @@
         i++;
         setTimeout(type, 180);
       } else {
-        // Прячем курсор после печати
+        // Прячем курсор
         document.querySelector(".cursor").style.display = "none";
 
         // Показываем девочку
         setTimeout(() => {
           girlEl.classList.add("show");
         }, 400);
+
+        // Через 1.4 секунды после девочки — показываем кнопку
+        setTimeout(() => {
+          aboutBtn.classList.add("show");
+        }, 1800);
       }
     }
+
+    // Открыть модальное окно
+    aboutBtn.addEventListener("click", () => {
+      modalOverlay.classList.add("open");
+    });
+
+    // Закрыть по крестику
+    modalClose.addEventListener("click", () => {
+      modalOverlay.classList.remove("open");
+    });
+
+    // Закрыть по клику на фон
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove("open");
+      }
+    });
+
+    // Закрыть по Esc
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        modalOverlay.classList.remove("open");
+      }
+    });
 
     setTimeout(type, 500);
   </script>
