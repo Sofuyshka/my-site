@@ -73,7 +73,6 @@
       transition: opacity 1s ease, transform 1s ease;
     }
 
-    /* Когда класс появится — девочка выезжает */
     img.show {
       opacity: 1;
       transform: translateY(0);
@@ -124,16 +123,18 @@
       if (i < fullText.length) {
         textEl.textContent += fullText.charAt(i);
         i++;
-        setTimeout(type, 180); // скорость печати (мс). Больше = медленнее
+        setTimeout(type, 180);
       } else {
-        // Текст напечатан — показываем девочку
+        // Прячем курсор после печати
+        document.querySelector(".cursor").style.display = "none";
+
+        // Показываем девочку
         setTimeout(() => {
           girlEl.classList.add("show");
         }, 400);
       }
     }
 
-    // Небольшая пауза после загрузки, потом начинаем печатать
     setTimeout(type, 500);
   </script>
 </body>
