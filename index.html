@@ -76,11 +76,25 @@
       transform: translateY(0);
     }
 
-    .about-btn {
+    /* Контейнер с кнопками внизу */
+    .buttons {
       position: absolute;
       bottom: 5vh;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
+      display: flex;
+      gap: 16px;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .buttons.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .about-btn {
       padding: 14px 36px;
       font-family: 'Arial Black', Arial, sans-serif;
       font-size: 1.2rem;
@@ -89,22 +103,17 @@
       border: 2px solid rgba(255, 255, 255, 0.6);
       border-radius: 50px;
       cursor: pointer;
-      z-index: 3;
-      opacity: 0;
-      transition: opacity 0.6s ease, transform 0.6s ease, background 0.3s;
+      transition: background 0.3s, transform 0.3s;
       backdrop-filter: blur(10px);
-    }
-
-    .about-btn.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      white-space: nowrap;
     }
 
     .about-btn:hover {
       background: rgba(255, 255, 255, 0.35);
-      transform: translateX(-50%) translateY(-2px);
+      transform: translateY(-2px);
     }
 
+    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -128,6 +137,8 @@
       position: relative;
       max-width: 500px;
       width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
       padding: 40px 32px;
       background: rgba(255, 255, 255, 0.85);
       border-radius: 20px;
@@ -166,8 +177,7 @@
       background: none;
       border: none;
       font-size: 1.6rem;
-      cursor: pointer;
-      color: #2c3e50;
+      cursor: pointer;color: #2c3e50;
       line-height: 1;
       transition: transform 0.2s;
     }
@@ -176,8 +186,87 @@
       transform: scale(1.2);
     }
 
+    /* Стили для квиза */
+    .quiz-question {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .quiz-answer {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      margin-bottom: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 1rem;
+      text-align: left;
+      color: #2c3e50;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid rgba(44, 62, 80, 0.15);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, border 0.2s, transform 0.2s;
+    }
+
+    .quiz-answer:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(44, 62, 80, 0.4);
+      transform: translateX(4px);
+    }
+
+    .quiz-answer.selected {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #a855f7;
+    }
+
+    .quiz-progress {
+      font-family: Arial, sans-serif;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+    }
+
+    .quiz-start-btn {
+      padding: 16px 40px;
+      font-family: 'Arial Black', Arial, sans-serif;
+      font-size: 1.1rem;
+      color: white;
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+    }
+
+    .quiz-start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(168, 85, 247, 0.5);
+    }
+
+    .quiz-result {
+      text-align: center;
+      font-size: 1.4rem;
+      line-height: 1.5;
+      color: #2c3e50;
+    }
+
+    .quiz-result .percent {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin: 12px 0;
+    }
+
+    /* Мобильная версия */
     @media (max-width: 700px) {
-      body {flex-direction: column;
+      body {
+        flex-direction: column;
       }
 
       h1 {
@@ -203,10 +292,18 @@
         height: 250px;
       }
 
-      .about-btn {
-        font-size: 1rem;
-        padding: 12px 28px;
+      .buttons {
+        gap: 10px;
         bottom: 4vh;
+      }
+
+      .about-btn {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+      }
+
+      .modal {
+        padding: 30px 22px;
       }
 
       .modal h2 {
@@ -216,6 +313,15 @@
       .modal p {
         font-size: 0.95rem;
       }
+
+      .quiz-question {
+        font-size: 1.1rem;
+      }
+
+      .quiz-answer {
+        font-size: 0.9rem;
+        padding: 12px 16px;
+      }
     }
   </style>
 </head>
@@ -223,26 +329,45 @@
   <h1><span id="text"></span><span class="cursor">&nbsp;</span></h1>
   <img id="girl" src="girl.png" alt="Пиксельная девочка">
 
-  <button class="about-btn" id="aboutBtn">Обо мне</button>
+  <div class="buttons" id="buttons">
+    <button class="about-btn" id="aboutBtn">Обо мне</button>
+    <button class="about-btn" id="quizBtn">Угадайка</button>
+  </div>
 
-  <div class="modal-overlay" id="modalOverlay">
+  <!-- Окно "Обо мне" -->
+  <div class="modal-overlay" id="aboutOverlay">
     <div class="modal">
-      <button class="modal-close" id="modalClose">×</button>
+      <button class="modal-close" id="aboutClose">×</button>
       <h2>Обо мне</h2>
       <p>Я очень люблю котиков 🐱</p>
       <p>Моя любимая группа — Deftones 🎵</p>
     </div>
   </div>
 
+  <!-- Окно "Угадайка" -->
+  <div class="modal-overlay" id="quizOverlay">
+    <div class="modal">
+      <button class="modal-close" id="quizClose">×</button>
+      <div id="quizContent"></div>
+    </div>
+  </div>
+
   <script>
     const fullText = "ПРИВЕТ!!!";
     const textEl = document.getElementById("text");
-    const girlEl = document.getElementById("girl");
-    const aboutBtn = document.getElementById("aboutBtn");
-    const modalOverlay = document.getElementById("modalOverlay");
-    const modalClose = document.getElementById("modalClose");
-    let i = 0;
+    const girlEl = document.getElementById("girl");const buttonsEl = document.getElementById("buttons");
 
+    const aboutBtn = document.getElementById("aboutBtn");
+    const aboutOverlay = document.getElementById("aboutOverlay");
+    const aboutClose = document.getElementById("aboutClose");
+
+    const quizBtn = document.getElementById("quizBtn");
+    const quizOverlay = document.getElementById("quizOverlay");
+    const quizClose = document.getElementById("quizClose");
+    const quizContent = document.getElementById("quizContent");
+
+    /* ============ АНИМАЦИЯ ПЕЧАТИ ============ */
+    let i = 0;
     function type() {
       if (i < fullText.length) {
         textEl.textContent += fullText.charAt(i);
@@ -256,32 +381,124 @@
         }, 400);
 
         setTimeout(() => {
-          aboutBtn.classList.add("show");
+          buttonsEl.classList.add("show");
         }, 1800);
       }
     }
+    setTimeout(type, 500);
 
-    aboutBtn.addEventListener("click", () => {
-      modalOverlay.classList.add("open");
+    /* ============ ОКНО "ОБО МНЕ" ============ */
+    aboutBtn.addEventListener("click", () => aboutOverlay.classList.add("open"));
+    aboutClose.addEventListener("click", () => aboutOverlay.classList.remove("open"));
+    aboutOverlay.addEventListener("click", (e) => {
+      if (e.target === aboutOverlay) aboutOverlay.classList.remove("open");
     });
 
-    modalClose.addEventListener("click", () => {
-      modalOverlay.classList.remove("open");
+    /* ============ ОКНО "УГАДАЙКА" ============ */
+    quizBtn.addEventListener("click", () => {
+      quizOverlay.classList.add("open");
+      showQuizIntro();
+    });
+    quizClose.addEventListener("click", () => quizOverlay.classList.remove("open"));
+    quizOverlay.addEventListener("click", (e) => {
+      if (e.target === quizOverlay) quizOverlay.classList.remove("open");
     });
 
-    modalOverlay.addEventListener("click", (e) => {
-      if (e.target === modalOverlay) {
-        modalOverlay.classList.remove("open");
+    // Вопросы и правильные ответы
+    const questions = [
+      {
+        q: "В каком месяце я родилась?",
+        answers: ["Февраль", "Май", "Декабрь", "Август"],
+        correct: 0
+      },
+      {
+        q: "Мой любимый цвет?",
+        answers: ["Коричневый", "Розовый", "Голубой", "Зелёный"],
+        correct: 1
+      },
+      {
+        q: "Моя любимая игра?",
+        answers: ["Dota 2", "Sally Face", "Clash Royale", "Warcraft III"],
+        correct: 3
+      },
+      {
+        q: "Мой рекорд сна?",
+        answers: ["10+ часов", "12+ часов", "18+ часов", "20+ часов"],
+        correct: 2
+      },
+      {
+        q: "Мой любимый напиток?",
+        answers: ["Пиво", "Молочный коктейль", "Капучино", "Кола зеро"],
+        correct: 1
+      },
+      {
+        q: "Мой любимый аниме персонаж?",
+        answers: ["Годжо Сатору", "Эл Лоулайт", "Гриффит", "Харука Касугано"],
+        correct: 0
       }
-    });
+    ];
 
+    let currentQuestion = 0;
+    let score = 0;
+
+    function showQuizIntro() {
+      quizContent.innerHTML = `
+        <h2>На сколько процентов ты меня знаешь?</h2>
+        <p style="font-family: Arial, sans-serif; margin-bottom: 20px;">Ответь на 6 вопросов — и узнаем!</p>
+        <button class="quiz-start-btn" id="startQuizBtn">Погнали!</button>
+      `;
+      document.getElementById("startQuizBtn").addEventListener("click", () => {
+        currentQuestion = 0;
+        score = 0;
+        showQuestion();
+      });
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      const progress = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+
+      quizContent.innerHTML = `
+        <div class="quiz-progress">${progress}</div>
+        <div class="quiz-question">${q.q}</div>
+        ${q.answers.map((a, idx) =>
+          `<button class="quiz-answer" data-idx="${idx}">${a}</button>`
+        ).join("")}
+      `;
+
+      document.querySelectorAll(".quiz-answer").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const idx = parseInt(btn.dataset.idx);
+          if (idx === q.correct) score++;
+
+          currentQuestion++;
+          if (currentQuestion < questions.length) {
+            showQuestion();
+          } else {
+            showResult();
+          }
+        });});
+    }
+
+    function showResult() {
+      const percent = Math.round((score / questions.length) * 100);
+
+      quizContent.innerHTML = `
+        <div class="quiz-result">
+          <p>Ты знаешь меня на</p>
+          <span class="percent">${percent}%</span>
+          <p>🎉</p>
+        </div>
+      `;
+    }
+
+    /* ============ ЗАКРЫТИЕ ПО ESC ============ */
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        modalOverlay.classList.remove("open");
+        aboutOverlay.classList.remove("open");
+        quizOverlay.classList.remove("open");
       }
     });
-
-    setTimeout(type, 500);
   </script>
 </body>
 </html>
